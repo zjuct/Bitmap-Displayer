@@ -1,21 +1,20 @@
-#pragma warning(disable:4996)
-/*
-该文件负责bmp文件的读入和写出
+#pragma once
+#ifndef _BMP_H_
+#define _BMP_H_
+#include"util.h"
 
+/*
+by 陈桐
+last_modified:2022-04-18 23:47
+该头文件定义了BMP结构体，并封装了BMP文件的读取和写出接口
 */
 
-#include<Windows.h>
-#include<stdio.h>
-#include<stdlib.h>
+#define MAX_SIZE 1024
 
+static unsigned int expendX = 0;
+static unsigned int expendY = 0;
 
-#define MAX_SIZE 4096
-
-typedef struct pair {
-	unsigned char ch1;
-	unsigned char ch2;
-}pair;
-
+//BMP文件头定义
 //文件信息结构体 ，共14字节 
 typedef struct bitmap_file_header {
 	unsigned short file_type;
@@ -40,44 +39,28 @@ typedef struct bitmap_info_header {
 	unsigned int color_important;
 }bitmap_info_header;
 
-typedef struct bitmap_palette {
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
-	unsigned char reserved;
-}bitmap_palette;
-
-typedef struct Bitmap {
+//BMP结构体定义
+typedef struct _Bitmap {
 	double x;
 	double y;
+	unsigned int expendX;
+	unsigned int expendY;
 	bitmap_file_header file_header;
 	bitmap_info_header info_header;
-	bitmap_palette color[MAX_SIZE * MAX_SIZE];
+	RGBA* rgbacolor;
+	RGB* rgbcolor;
 	int pos;
 }Bitmap;
 
-//将两个char拼接为unsigned short
-unsigned short to_unsigned_short(unsigned char ch1, unsigned char ch2);
-
-//提取unsigned short的高低位
-pair to_pair(unsigned short num);
-
-unsigned int get_unsigned_int(FILE* fp);
-
-unsigned short get_unsigned_short(FILE* fp);
-
-void get_file_header(FILE* fp, Bitmap* pb);
-
-void get_info_header(FILE* fp, Bitmap* pb);
-
-Bitmap* loadBitmap(char* path);
-
+//函数声明
+Bitmap* LoadBMP(char* path);
+unsigned int to_unsigned_int(int begin, int end);
+unsigned short to_unsigned_short(int begin, int end);
+void GetFileHeader(Bitmap* bmp);
+void GetInfoHeader(Bitmap* bmp);
 void set_unsigned_short(FILE* fp, unsigned short num);
-
 void set_unsigned_int(FILE* fp, unsigned short num);
-
 void set_file_header(FILE* fp, Bitmap* pb);
-
 void set_info_header(FILE* fp, Bitmap* pb);
-
-void CopyBitmap(Bitmap* pb);
+void SaveBMP(char* path, Bitmap* bmp);
+#endif
